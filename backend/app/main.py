@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from app.config import settings
-from app.routers import health, quests
+from app.routers import health, quests, auth
+from app.database import Base, engine
+from app import models
 
 app = FastAPI(
     title=settings.app_name,
@@ -10,6 +12,9 @@ app = FastAPI(
 
 app.include_router(health.router)
 app.include_router(quests.router)
+app.include_router(auth.router)
+
+Base.metadata.create_all(bind=engine)
 
 @app.get("/")
 def home():
