@@ -12,6 +12,7 @@ class User(Base):
     email = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    assessment_result = relationship("AssessmentResult", back_populates="user", uselist=False)
 
     profile = relationship("UserProfile", back_populates="user", uselist=False)
     goals = relationship("Goal", back_populates="user")
@@ -50,6 +51,18 @@ class Goal(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="goals")
+
+class AssessmentResult(Base):
+    __tablename__ = "assessment_results"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    domain_scores = Column(JSON, default=dict)   # {"physical": 3.5, "educational": 4.0, ...}
+    raw_answers = Column(JSON, default=dict)      # full submitted answers, for later re-scoring/audit
+    completed_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    user = relationship("User", back_populates="assessment_result")
 
 
 class Quest(Base):
