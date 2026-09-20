@@ -1,0 +1,224 @@
+{
+    "physical": [
+        {
+            "id": "phys_1",
+            "text": "How many days per week do you currently exercise?",
+            "type": "multiple_choice",
+            "options": [
+                {
+                    "label": "0 days",
+                    "score": 1
+                },
+                {
+                    "label": "1-2 days",
+                    "score": 2
+                },
+                {
+                    "label": "3-4 days",
+                    "score": 4
+                },
+                {
+                    "label": "5+ days",
+                    "score": 5
+                }
+            ]
+        },
+        {
+            "id": "phys_2",
+            "text": "How would you rate your current energy levels?",
+            "type": "scale",
+            "min": 1,
+            "max": 5
+        },
+        {
+            "id": "phys_3",
+            "text": "How consistent is your sleep schedule?",
+            "type": "scale",
+            "min": 1,
+            "max": 5
+        },
+        {
+            "id": "phys_4",
+            "text": "Do you have any physical goals right now?",
+            "type": "open_text",
+            "required": false
+        }
+    ],
+    "educational": [
+        {
+            "id": "edu_1",
+            "text": "What's your current focus?",
+            "type": "multiple_choice",
+            "options": [
+                {
+                    "label": "Study for exams",
+                    "score": 3
+                },
+                {
+                    "label": "Build skills",
+                    "score": 4
+                },
+                {
+                    "label": "General learning",
+                    "score": 3
+                },
+                {
+                    "label": "Not focused right now",
+                    "score": 1
+                }
+            ]
+        },
+        {
+            "id": "edu_2",
+            "text": "How many hours per week do you dedicate to learning/study?",
+            "type": "multiple_choice",
+            "options": [
+                {
+                    "label": "0 hours",
+                    "score": 1
+                },
+                {
+                    "label": "1-3 hours",
+                    "score": 2
+                },
+                {
+                    "label": "4-7 hours",
+                    "score": 4
+                },
+                {
+                    "label": "8+ hours",
+                    "score": 5
+                }
+            ]
+        },
+        {
+            "id": "edu_3",
+            "text": "How confident do you feel about your current learning path?",
+            "type": "scale",
+            "min": 1,
+            "max": 5
+        },
+        {
+            "id": "edu_4",
+            "text": "Any specific skill or subject you want to prioritize?",
+            "type": "open_text",
+            "required": false
+        }
+    ],
+    "mental_wellness": [
+        {
+            "id": "mw_1",
+            "text": "How would you describe your general stress level this week?",
+            "type": "scale",
+            "min": 1,
+            "max": 5,
+            "note": "1 = low stress, 5 = high stress (inverted when scoring: lower stress = higher wellness score)"
+        },
+        {
+            "id": "mw_2",
+            "text": "How often do you get a chance to fully relax or decompress?",
+            "type": "multiple_choice",
+            "options": [
+                {
+                    "label": "Rarely",
+                    "score": 1
+                },
+                {
+                    "label": "Sometimes",
+                    "score": 3
+                },
+                {
+                    "label": "Often",
+                    "score": 4
+                },
+                {
+                    "label": "Daily",
+                    "score": 5
+                }
+            ]
+        },
+        {
+            "id": "mw_3",
+            "text": "Would you find gentle wellness reminders (breathing, short breaks) helpful?",
+            "type": "yes_no",
+            "scored": false
+        }
+    ],
+    "emotional": [
+        {
+            "id": "emo_1",
+            "text": "How connected do you feel to people around you right now?",
+            "type": "scale",
+            "min": 1,
+            "max": 5
+        },
+        {
+            "id": "emo_2",
+            "text": "Do you have a regular outlet for processing emotions (journaling, talking to someone, etc.)?",
+            "type": "multiple_choice",
+            "options": [
+                {
+                    "label": "No",
+                    "score": 1
+                },
+                {
+                    "label": "Sometimes",
+                    "score": 3
+                },
+                {
+                    "label": "Yes",
+                    "score": 5
+                }
+            ]
+        },
+        {
+            "id": "emo_3",
+            "text": "Is there anything specific weighing on you that you'd like the system to be mindful of?",
+            "type": "open_text",
+            "required": false,
+            "note": "Not scored. Flag for crisis-language detection per SAFETY.md before storing/displaying."
+        }
+    ],
+    "career": [
+        {
+            "id": "career_1",
+            "text": "How clear do you feel about your career direction right now?",
+            "type": "scale",
+            "min": 1,
+            "max": 5
+        },
+        {
+            "id": "career_2",
+            "text": "What's your current focus?",
+            "type": "multiple_choice",
+            "options": [
+                {
+                    "label": "Job search",
+                    "score": 3
+                },
+                {
+                    "label": "Skill-building",
+                    "score": 4
+                },
+                {
+                    "label": "Career change",
+                    "score": 2
+                },
+                {
+                    "label": "Student",
+                    "score": 3
+                },
+                {
+                    "label": "Exploring",
+                    "score": 2
+                }
+            ]
+        },
+        {
+            "id": "career_3",
+            "text": "Any specific milestone you're working toward in the next 3-6 months?",
+            "type": "open_text",
+            "required": false
+        }
+    ]
+}
