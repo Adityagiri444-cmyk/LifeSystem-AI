@@ -13,6 +13,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     assessment_result = relationship("AssessmentResult", back_populates="user", uselist=False)
+    status = relationship("UserStatus", back_populates="user", uselist=False)
 
     profile = relationship("UserProfile", back_populates="user", uselist=False)
     goals = relationship("Goal", back_populates="user")
@@ -63,6 +64,18 @@ class AssessmentResult(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     user = relationship("User", back_populates="assessment_result")
+
+class UserStatus(Base):
+    __tablename__ = "user_status"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    xp = Column(Integer, default=0)
+    level = Column(Integer, default=1)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+
+    user = relationship("User", back_populates="status")    
 
 
 class Quest(Base):
