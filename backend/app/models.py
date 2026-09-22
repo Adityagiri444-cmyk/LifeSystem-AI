@@ -86,3 +86,11 @@ class Quest(Base):
     domain_id = Column(Integer, nullable=False)
     difficulty = Column(String)
     xp_reward = Column(Integer, nullable=False)
+
+class QuestCompletion(Base):
+    __tablename__ = "quest_completions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    quest_id = Column(Integer, ForeignKey("quests.id"), nullable=False)
+    completed_at = Column(DateTime(timezone=True), server_default=func.now())    
