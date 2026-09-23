@@ -1,22 +1,74 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import text
+from typing import List
 from app.database import get_db
 from app.models import User, Quest, QuestCompletion, UserStatus
+from app.schemas.quest import QuestCreate, QuestUpdate, QuestResponse
 from app.schemas.quest_completion import QuestCompletionResponse
 from app.services.auth import get_current_user
 from app.services.leveling import compute_level, xp_earned_today, already_completed_today, DAILY_XP_CAP
 
 router = APIRouter(prefix="/quests", tags=["quests"])
 
-@router.get("/")
+
+@router.get("/", response_model=List[QuestResponse])
 def get_quests(db: Session = Depends(get_db)):
-    result = db.execute(text("SELECT id, title, domain_id, difficulty, xp_reward FROM quests"))
-    rows = result.fetchall()
-    return [
-        {"id": r.id, "title": r.title, "domain_id": r.domain_id, "difficulty": r.difficulty, "xp_reward": r.xp_reward}
-        for r in rows
-    ]
+    return db.query(Quest).all()
+
+
+@router.get("/{quest_id}", response_model=QuestResponse)
+def get_quest(quest_id: int, db: Session = Depends(get_db)):
+    quest = db.query(Quest).filter(Quest.id == quest_id).first()
+    if not quest:
+        raise HTTPException(status_code=404, detail="Quest not found")
+    return quest
+
+
+@router.post("/", response_model=QuestResponse)
+def create_quest(
+    quest_data: QuestCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    new_quest = Quest(**quest_data.model_dump())
+    db.add(new_quest)
+    db.commit()
+    db.refresh(new_quest)
+    return new_quest
+
+
+@router.put("/{quest_id}", response_model=QuestResponse)
+def update_quest(
+    quest_id: int,
+    quest_data: QuestUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    quest = db.query(Quest).filter(Quest.id == quest_id).first()
+    if not quest:
+        raise HTTPException(status_code=404, detail="Quest not found")
+
+    updates = quest_data.model_dump(exclude_unset=True)
+    for field, value in updates.items():
+        setattr(quest, field, value)
+
+    db.commit()
+    db.refresh(quest)
+    return quest
+
+
+@router.delete("/{quest_id}")
+def delete_quest(
+    quest_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    quest = db.query(Quest).filter(Quest.id == quest_id).first()
+    if not quest:
+        raise HTTPException(status_code=404, detail="Quest not found")
+    db.delete(quest)
+    db.commit()
+    return {"detail": "Quest deleted"}
 
 
 @router.post("/{quest_id}/complete", response_model=QuestCompletionResponse)
@@ -31,6 +83,10 @@ def complete_quest(
 
     if already_completed_today(db, current_user.id, quest_id):
         raise HTTPException(status_code=400, detail="Quest already completed in the last 24 hours")
+
+    unmet = [p for p in (quest.prerequisites or []) if not already_completed_today(db, current_user.id, p)]
+    # Note: this prerequisite check only looks at the last 24h; a proper "ever completed"
+    # check will come once we track full completion history in a later week.
 
     xp_today = xp_earned_today(db, current_user.id)
     xp_to_award = quest.xp_reward

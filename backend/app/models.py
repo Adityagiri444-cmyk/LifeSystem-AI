@@ -83,8 +83,12 @@ class Quest(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, nullable=False)
-    domain_id = Column(Integer, nullable=False)
+    objective = Column(String)                     # what the user actually needs to do
+    domain_id = Column(Integer, ForeignKey("domains.id"), nullable=False)
     difficulty = Column(String)
+    duration_minutes = Column(Integer)              # estimated time to complete
+    prerequisites = Column(JSON, default=list)       # list of quest IDs that must be done first
+    evidence_type = Column(String, default="none")   # none, text, photo, checkbox
     xp_reward = Column(Integer, nullable=False)
 
 class QuestCompletion(Base):
