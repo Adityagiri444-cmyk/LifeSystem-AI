@@ -5,8 +5,10 @@ from app.database import get_db
 from app.models import User, Quest, QuestCompletion, UserStatus
 from app.schemas.quest import QuestCreate, QuestUpdate, QuestResponse
 from app.schemas.quest_completion import QuestCompletionResponse
+from app.schemas.recommendation import RecommendationResponse
 from app.services.auth import get_current_user
 from app.services.leveling import compute_level, xp_earned_today, already_completed_today, DAILY_XP_CAP
+from app.services.recommender import generate_recommendations
 
 router = APIRouter(prefix="/quests", tags=["quests"])
 
@@ -14,6 +16,14 @@ router = APIRouter(prefix="/quests", tags=["quests"])
 @router.get("/", response_model=List[QuestResponse])
 def get_quests(db: Session = Depends(get_db)):
     return db.query(Quest).all()
+
+
+@router.get("/recommended", response_model=List[RecommendationResponse])
+def get_recommended_quests(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return generate_recommendations(db, current_user.id)
 
 
 @router.get("/{quest_id}", response_model=QuestResponse)
