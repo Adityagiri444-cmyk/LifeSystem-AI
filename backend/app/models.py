@@ -50,8 +50,23 @@ class Goal(Base):
     description = Column(String)
     status = Column(String, default="active")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    milestones = relationship("Milestone", back_populates="goal", order_by="Milestone.order_index")
 
     user = relationship("User", back_populates="goals")
+
+
+class Milestone(Base):
+    __tablename__ = "milestones"
+
+    id = Column(Integer, primary_key=True, index=True)
+    goal_id = Column(Integer, ForeignKey("goals.id"), nullable=False)
+    title = Column(String, nullable=False)
+    order_index = Column(Integer, nullable=False)   # sequence within the goal
+    skill_tag = Column(String)                       # e.g. "running-endurance", "algebra-basics"
+    status = Column(String, default="locked")        # locked, active, completed
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    goal = relationship("Goal", back_populates="milestones")    
 
 class AssessmentResult(Base):
     __tablename__ = "assessment_results"

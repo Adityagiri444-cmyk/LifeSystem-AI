@@ -7,6 +7,7 @@ from app.routers import health, quests, auth, profile
 from app.routers import health, quests, auth, profile, goals
 from app.routers import health, quests, auth, profile, goals, assessment
 from app.routers import health, quests, auth, profile, goals, assessment, status
+from app.routers import health, quests, auth, profile, goals, assessment, status, roadmap
 
 app = FastAPI(
     title=settings.app_name,
@@ -21,6 +22,7 @@ app.include_router(profile.router)
 app.include_router(goals.router)
 app.include_router(assessment.router)
 app.include_router(status.router)
+app.include_router(roadmap.router)
 Base.metadata.create_all(bind=engine)
 
 @app.get("/")
