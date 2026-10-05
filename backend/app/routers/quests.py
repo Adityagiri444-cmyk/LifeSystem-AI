@@ -9,6 +9,9 @@ from app.schemas.recommendation import RecommendationResponse
 from app.services.auth import get_current_user
 from app.services.leveling import compute_level, xp_earned_today, already_completed_today, DAILY_XP_CAP
 from app.services.recommender import generate_recommendations
+from app.models import Evidence
+from app.schemas.evidence import EvidenceSubmission
+from app.services.evidence import validate_evidence
 
 router = APIRouter(prefix="/quests", tags=["quests"])
 
@@ -84,6 +87,7 @@ def delete_quest(
 @router.post("/{quest_id}/complete", response_model=QuestCompletionResponse)
 def complete_quest(
     quest_id: int,
+    evidence_data: EvidenceSubmission = EvidenceSubmission(),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -94,12 +98,11 @@ def complete_quest(
     if already_completed_today(db, current_user.id, quest_id):
         raise HTTPException(status_code=400, detail="Quest already completed in the last 24 hours")
 
-    unmet = [p for p in (quest.prerequisites or []) if not already_completed_today(db, current_user.id, p)]
-    # Note: this prerequisite check only looks at the last 24h; a proper "ever completed"
-    # check will come once we track full completion history in a later week.
+    xp_multiplier = validate_evidence(quest.evidence_type, evidence_data.content, quest.duration_minutes)
 
     xp_today = xp_earned_today(db, current_user.id)
-    xp_to_award = quest.xp_reward
+    base_xp = quest.xp_reward
+    xp_to_award = round(base_xp * xp_multiplier / 100)
 
     if xp_today + xp_to_award > DAILY_XP_CAP:
         xp_to_award = max(0, DAILY_XP_CAP - xp_today)
@@ -108,6 +111,15 @@ def complete_quest(
 
     completion = QuestCompletion(user_id=current_user.id, quest_id=quest_id)
     db.add(completion)
+    db.flush()  # need completion.id before creating Evidence
+
+    evidence = Evidence(
+        quest_completion_id=completion.id,
+        evidence_type=quest.evidence_type,
+        content=evidence_data.content,
+        xp_multiplier=xp_multiplier,
+    )
+    db.add(evidence)
 
     status_row = db.query(UserStatus).filter(UserStatus.user_id == current_user.id).first()
     if not status_row:
@@ -129,4 +141,5 @@ def complete_quest(
         xp_into_level=level_info["xp_into_level"],
         xp_to_next_level=level_info["xp_to_next_level"],
         leveled_up=level_info["level"] > old_level,
+        xp_multiplier=xp_multiplier,
     )

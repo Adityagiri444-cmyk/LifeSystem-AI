@@ -112,4 +112,14 @@ class QuestCompletion(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     quest_id = Column(Integer, ForeignKey("quests.id"), nullable=False)
-    completed_at = Column(DateTime(timezone=True), server_default=func.now())    
+    completed_at = Column(DateTime(timezone=True), server_default=func.now()) 
+
+class Evidence(Base):
+    __tablename__ = "evidence"
+
+    id = Column(Integer, primary_key=True, index=True)
+    quest_completion_id = Column(Integer, ForeignKey("quest_completions.id"), nullable=False)
+    evidence_type = Column(String, nullable=False)
+    content = Column(JSON, default=dict)       # flexible payload, shape depends on evidence_type
+    xp_multiplier = Column(Integer, default=100)  # percentage, e.g. 100 = full XP, 50 = half
+    submitted_at = Column(DateTime(timezone=True), server_default=func.now())
