@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models import Quest, Domain, Goal, AssessmentResult
 from app.services.leveling import already_completed_today
+from app.services.difficulty import get_or_create_difficulty_state
 
 DOMAIN_KEY_MAP = {
     1: "physical",
@@ -56,12 +57,16 @@ def generate_recommendations(db: Session, user_id: int, limit: int = 5) -> list[
         if len(recommendations) >= limit:
             break
 
+        difficulty_state = get_or_create_difficulty_state(db, user_id, domain_info["domain_id"])
+
         candidate_quests = (
             db.query(Quest)
-            .filter(Quest.domain_id == domain_info["domain_id"])
-            .order_by(Quest.difficulty)
+            .filter(Quest.domain_id == domain_info["domain_id"], Quest.difficulty == difficulty_state.current_difficulty)
             .all()
         )
+        if not candidate_quests:
+            # fall back to any difficulty if nothing matches the adapted level
+            candidate_quests = db.query(Quest).filter(Quest.domain_id == domain_info["domain_id"]).all()
 
         for quest in candidate_quests:
             if not already_completed_today(db, user_id, quest.id):

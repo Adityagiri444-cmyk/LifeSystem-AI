@@ -123,3 +123,13 @@ class Evidence(Base):
     content = Column(JSON, default=dict)       # flexible payload, shape depends on evidence_type
     xp_multiplier = Column(Integer, default=100)  # percentage, e.g. 100 = full XP, 50 = half
     submitted_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class DifficultyState(Base):
+    __tablename__ = "difficulty_state"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    domain_id = Column(Integer, ForeignKey("domains.id"), nullable=False)
+    current_difficulty = Column(String, default="easy")  # easy, medium, hard
+    streak = Column(Integer, default=0)                   # consecutive successful completions in this domain
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())    

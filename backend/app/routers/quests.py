@@ -2,16 +2,17 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
-from app.models import User, Quest, QuestCompletion, UserStatus
+from app.models import DifficultyState, User, Quest, QuestCompletion, UserStatus, Evidence
 from app.schemas.quest import QuestCreate, QuestUpdate, QuestResponse
 from app.schemas.quest_completion import QuestCompletionResponse
 from app.schemas.recommendation import RecommendationResponse
+from app.schemas.evidence import EvidenceSubmission
+from app.schemas.difficulty import DifficultyStateResponse
 from app.services.auth import get_current_user
 from app.services.leveling import compute_level, xp_earned_today, already_completed_today, DAILY_XP_CAP
 from app.services.recommender import generate_recommendations
-from app.models import Evidence
-from app.schemas.evidence import EvidenceSubmission
 from app.services.evidence import validate_evidence
+from app.services.difficulty import update_difficulty_after_completion
 
 router = APIRouter(prefix="/quests", tags=["quests"])
 
@@ -27,6 +28,14 @@ def get_recommended_quests(
     current_user: User = Depends(get_current_user),
 ):
     return generate_recommendations(db, current_user.id)
+
+
+@router.get("/difficulty", response_model=List[DifficultyStateResponse])
+def get_my_difficulty_states(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return db.query(DifficultyState).filter(DifficultyState.user_id == current_user.id).all()
 
 
 @router.get("/{quest_id}", response_model=QuestResponse)
@@ -111,7 +120,7 @@ def complete_quest(
 
     completion = QuestCompletion(user_id=current_user.id, quest_id=quest_id)
     db.add(completion)
-    db.flush()  # need completion.id before creating Evidence
+    db.flush()
 
     evidence = Evidence(
         quest_completion_id=completion.id,
@@ -131,6 +140,8 @@ def complete_quest(
     status_row.xp += xp_to_award
     level_info = compute_level(status_row.xp)
     status_row.level = level_info["level"]
+
+    update_difficulty_after_completion(db, current_user.id, quest.domain_id, xp_multiplier)
 
     db.commit()
 
