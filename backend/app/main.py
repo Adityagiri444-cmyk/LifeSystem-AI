@@ -1,13 +1,8 @@
 from fastapi import FastAPI
 from app.config import settings
-from app.routers import health, quests, auth
+from app.routers import health, quests, auth, profile, goals, assessment, status, roadmap, insights
 from app.database import Base, engine
 from app import models
-from app.routers import health, quests, auth, profile
-from app.routers import health, quests, auth, profile, goals
-from app.routers import health, quests, auth, profile, goals, assessment
-from app.routers import health, quests, auth, profile, goals, assessment, status
-from app.routers import health, quests, auth, profile, goals, assessment, status, roadmap
 
 app = FastAPI(
     title=settings.app_name,
@@ -23,6 +18,8 @@ app.include_router(goals.router)
 app.include_router(assessment.router)
 app.include_router(status.router)
 app.include_router(roadmap.router)
+app.include_router(insights.router)
+
 Base.metadata.create_all(bind=engine)
 
 @app.get("/")
