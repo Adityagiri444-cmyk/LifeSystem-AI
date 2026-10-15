@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Why this quest? - UI mock</title>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 640px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            color: #1a1a1a;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .meter {
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: .5rem 0 1rem;
+        }
+
+        .meter>div {
+            height: 100%;
+            background: #2f7d4f;
+        }
+
+        .factor {
+            display: flex;
+            gap: .75rem;
+            padding: .6rem 0;
+            border-top: 1px solid #eee;
+        }
+
+        .tag {
+            font-size: .75rem;
+            padding: .1rem .5rem;
+            border-radius: 999px;
+            height: fit-content;
+        }
+
+        .supports {
+            background: #dff3e6;
+            color: #1d5e37;
+        }
+
+        .neutral {
+            background: #eee;
+            color: #555;
+        }
+
+        .against {
+            background: #fbe2e0;
+            color: #8a2a22;
+        }
+
+        textarea {
+            width: 100%;
+            height: 160px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Why this quest?</h1>
+    <p>Week 20 UI mock. Paste a response from <code>GET /insights/explain/{id}</code> and click Render.</p>
+    <textarea id="input"></textarea>
+    <button id="renderBtn">Render</button>
+    <div id="out"></div>
+
+    <script>
+        const SAMPLE = {
+            quest: { title: "Read 10 pages", difficulty: "easy", xp_reward: 10 },
+            domain_name: "Educational",
+            confidence: 0.95,
+            confidence_label: "high",
+            summary: "Read 10 pages is a high-confidence pick for Educational: 4 factor(s) support it and 0 count against it.",
+            recommended_now: true,
+            factors: [
+                { name: "Domain priority", impact: "supports", value: "#1 of 5", detail: "Ranked #1 of 5 domains by combined priority and bottleneck score (6.0)." },
+                { name: "Assessment score", impact: "supports", value: "1.0", detail: "Your Educational score (1.0) is below 3.0, so this domain gets extra priority." },
+                { name: "Active goal", impact: "supports", value: "yes", detail: "You have an active goal in Educational." },
+                { name: "Difficulty fit", impact: "supports", value: "easy vs easy", detail: "This quest is easy and your current level in Educational is easy." },
+                { name: "Daily XP", impact: "neutral", value: "150 XP left", detail: "150 XP left to earn today." }
+            ]
+        };
+
+        function el(tag, cls, text) {
+            const e = document.createElement(tag);
+            if (cls) e.className = cls;
+            if (text !== undefined) e.textContent = text;
+            return e;
+        }
+
+        function render(data) {
+            const out = document.getElementById("out");
+            out.replaceChildren();
+            const card = el("div", "card");
+            card.append(el("h2", "", data.quest.title));
+            card.append(el("div", "", data.domain_name + " · " + data.quest.difficulty + " · " + data.quest.xp_reward + " XP"));
+            card.append(el("p", "", data.summary));
+            const pct = Math.round(data.confidence * 100);
+            card.append(el("div", "", "Confidence: " + data.confidence_label + " (" + pct + "%)"));
+            const meter = el("div", "meter");
+            const fill = el("div");
+            fill.style.width = pct + "%";
+            meter.append(fill);
+            card.append(meter);
+            data.factors.forEach(function (f) {
+                const row = el("div", "factor");
+                row.append(el("span", "tag " + f.impact, f.impact));
+                const body = el("div");
+                body.append(el("strong", "", f.name + ": " + f.value));
+                body.append(el("div", "", f.detail));
+                row.append(body);
+                card.append(row);
+            });
+            out.append(card);
+        }
+
+        const input = document.getElementById("input");
+        input.value = JSON.stringify(SAMPLE, null, 2);
+        render(SAMPLE);
+
+        document.getElementById("renderBtn").addEventListener("click", function () {
+            try {
+                render(JSON.parse(input.value));
+            } catch (err) {
+                alert("That doesn't look like a valid explanation response: " + err.message);
+            }
+        });
+    </script>
+</body>
+
+</html>

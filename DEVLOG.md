@@ -6,6 +6,31 @@ and to have a real reference for what broke and why.
 
 ---
 
+## Weeks 17-20 (difficulty, bottlenecks, next action, explainability)
+
+**In my own words (Week 20):** WRITE 3-4 SENTENCES HERE FROM MEMORY.
+
+**Bug found and fixed (Week 20):** the explain endpoint labelled a hard quest
+"high confidence" with `recommended_now: true` for an easy-level user. Fix:
+confidence is capped at 0.6 on a difficulty mismatch, and `recommended_now`
+now requires a level match. Verified in pytest (55 passed) and live in Swagger
+(explain/3 = 0.6 medium false; explain/2 = 0.95 high true).
+*Lesson: a score needs a hard "don't recommend" rule when a constraint is
+violated. Score alone isn't enough.*
+
+**Known gaps (deferred):**
+- Confidence is a heuristic, not a calibrated probability: correlated factors
+  (low score, active goal) are counted more than once.
+- Quest catalog is thin at medium/hard (all Physical quests are easy; Career
+  has one medium quest).
+- Difficulty streak is uncapped once the user reaches "hard".
+- Bottleneck "no activity" low-severity entries can appear as the 7-day
+  window rolls.
+- Pydantic `class Config` deprecation warning (harmless; switch to `ConfigDict`).
+- A resubmitted assessment overwrites the previous one.
+
+---
+
 ## Environment & tooling
 
 - **`__init__.py` creation "error"**: VS Code's error tooltip rendered double
@@ -23,9 +48,9 @@ and to have a real reference for what broke and why.
 - **Forgot PostgreSQL password**: resolved by temporarily setting
   `pg_hba.conf` auth method to `trust`, resetting the password via `psql`,
   then reverting `pg_hba.conf` back to `scram-sha-256`.
-- **Password containing `@` broke `DATABASE_URL`**: `Aditya@67` has an `@`
-  inside it, colliding with the `user:pass@host` URL syntax. Fixed by
-  URL-encoding it as `Aditya%4067`.
+- **Special characters in the DB password broke `DATABASE_URL`**: an `@` in
+  the password collides with the `user:pass@host` URL syntax. Fixed by
+  URL-encoding it as `%40`.
 
 ## Code mistakes (mostly from pasting at the wrong location)
 
@@ -49,6 +74,8 @@ and to have a real reference for what broke and why.
 - **Login endpoint JSON vs OAuth2 form mismatch**: Swagger's Authorize button
   expects OAuth2 form data, not JSON. Fixed by switching to
   `OAuth2PasswordRequestForm`.
+- **`/quests/difficulty` returned 422**: shadowed by `/{quest_id}`. Fixed by
+  declaring fixed-path routes before the parameterised one.
 - **`PUT /quests/{id}` returned a raw `500`, not a clean `400`/`422`** on
   invalid input (bad `domain_id`/`difficulty`). **Known gap, deferred to
   Week 30 (testing/security/input validation).**
@@ -62,12 +89,13 @@ and to have a real reference for what broke and why.
 
 ## Process/security notes
 
-- Real secrets (DB password, JWT signing key) were typed into chat during
-  setup but never committed (`.env` is gitignored throughout). Worth
-  breaking the habit before deployment.
+- **A real DB password was committed in an earlier version of this file**
+  (commit 9c8c0ec). Redacted now and the password rotated; it remains in Git
+  history, so it is treated as compromised. `.env` itself is gitignored.
+  *Lesson: never write real credentials in docs, logs, or chat.*
 - **A commit (`beeb4ad`) was titled "Add DEVLOG.md" but the file itself was
   never actually created** — the evidence engine files got committed under
-  that message, but DEVLOG.md was missing until this entry fixed it.
+  that message, but DEVLOG.md was missing until a later commit fixed it.
 
 ---
 
