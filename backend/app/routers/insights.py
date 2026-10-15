@@ -5,9 +5,11 @@ from app.database import get_db
 from app.models import User
 from app.schemas.bottleneck import BottleneckResponse
 from app.schemas.next_action import NextActionResponse
+from app.schemas.explanation import ExplanationResponse
 from app.services.auth import get_current_user
 from app.services.bottleneck import detect_bottlenecks
 from app.services.next_action import get_next_best_action
+from app.services.explain import explain_quest
 
 router = APIRouter(prefix="/insights", tags=["insights"])
 
@@ -26,3 +28,12 @@ def get_next_action(
     current_user: User = Depends(get_current_user),
 ):
     return get_next_best_action(db, current_user.id)
+
+
+@router.get("/explain/{quest_id}", response_model=ExplanationResponse)
+def get_explanation(
+    quest_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return explain_quest(db, current_user.id, quest_id)
