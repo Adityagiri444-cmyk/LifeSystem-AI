@@ -4,6 +4,12 @@ from app.services.bottleneck import detect_bottlenecks
 from app.services.difficulty import get_or_create_difficulty_state
 from app.services.leveling import xp_earned_today, already_completed_today, DAILY_XP_CAP
 from app.services.recommender import get_domain_priorities
+from app.services.recovery import (
+    RECOVERY_XP_CAP,
+    build_recovery_reason,
+    get_recovery_status,
+    is_recovery_friendly,
+)
 
 
 def rank_domains(priorities: list[dict], bottlenecks: dict[int, dict]) -> list[dict]:
@@ -64,18 +70,58 @@ def build_reason(domain: dict, difficulty: str, matched_level: bool, quest_xp: i
 
 
 def get_next_best_action(db: Session, user_id: int) -> dict:
-    xp_remaining = max(0, DAILY_XP_CAP - xp_earned_today(db, user_id))
+    recovery = get_recovery_status(db, user_id)
+    recovery_mode = recovery["recovery_active"]
+
+    earned = xp_earned_today(db, user_id)
+    cap = RECOVERY_XP_CAP if recovery_mode else DAILY_XP_CAP
+    xp_remaining = max(0, cap - earned)
     if xp_remaining == 0:
         return {
             "quest": None,
             "domain_name": None,
             "reason": None,
             "xp_remaining_today": 0,
-            "message": "You've reached today's XP cap. Rest up, new XP unlocks tomorrow.",
+            "message": (
+                "You've hit today's recovery target. That's plenty. Rest up."
+                if recovery_mode
+                else "You've reached today's XP cap. Rest up, new XP unlocks tomorrow."
+            ),
+            "recovery_mode": recovery_mode,
         }
 
     bottlenecks = {b["domain_id"]: b for b in detect_bottlenecks(db, user_id)}
     ranked = rank_domains(get_domain_priorities(db, user_id), bottlenecks)
+
+    if recovery_mode:
+        # Recovery: ignore difficulty levels, offer only short easy quests, shortest first.
+        candidates = []
+        for domain in ranked:
+            quests = db.query(Quest).filter(Quest.domain_id == domain["domain_id"]).all()
+            for quest in quests:
+                if is_recovery_friendly(quest.difficulty, quest.duration_minutes) \
+                        and not already_completed_today(db, user_id, quest.id):
+                    candidates.append((domain["combined_score"] * -1, quest.duration_minutes or 999, quest.id, domain, quest))
+        if candidates:
+            candidates.sort(key=lambda c: c[:3])
+            _, _, _, domain, quest = candidates[0]
+            return {
+                "quest": quest,
+                "domain_name": domain["domain_name"],
+                "reason": build_recovery_reason(recovery["state"], quest.title, quest.duration_minutes, xp_remaining),
+                "xp_remaining_today": xp_remaining,
+                "message": recovery["message"],
+                "recovery_mode": True,
+            }
+        return {
+            "quest": None,
+            "domain_name": None,
+            "reason": None,
+            "xp_remaining_today": xp_remaining,
+            "message": "No short, easy quests are left today. Resting is a fine choice.",
+            "recovery_mode": True,
+        }
+
     states = {d["domain_id"]: get_or_create_difficulty_state(db, user_id, d["domain_id"]) for d in ranked}
 
     # Pass 1: only quests at the user's current difficulty. Pass 2: anything unfinished.
@@ -94,6 +140,7 @@ def get_next_best_action(db: Session, user_id: int) -> dict:
                         "reason": build_reason(domain, level, require_match, quest.xp_reward, xp_remaining),
                         "xp_remaining_today": xp_remaining,
                         "message": None,
+                        "recovery_mode": False,
                     }
 
     return {
@@ -102,4 +149,5 @@ def get_next_best_action(db: Session, user_id: int) -> dict:
         "reason": None,
         "xp_remaining_today": xp_remaining,
         "message": "You've completed every available quest today. Check back tomorrow.",
+        "recovery_mode": False,
     }

@@ -132,4 +132,14 @@ class DifficultyState(Base):
     domain_id = Column(Integer, ForeignKey("domains.id"), nullable=False)
     current_difficulty = Column(String, default="easy")  # easy, medium, hard
     streak = Column(Integer, default=0)                   # consecutive successful completions in this domain
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())    
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())   
+
+
+class CheckIn(Base):
+    __tablename__ = "check_ins"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    state = Column(String, nullable=False)      # tired, stressed, overwhelmed, low_energy, okay
+    energy = Column(Integer)                    # optional 1-5 self-rating
+    created_at = Column(DateTime(timezone=True), server_default=func.now())     

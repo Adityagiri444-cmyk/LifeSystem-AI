@@ -8,3 +8,4 @@ class NextActionResponse(BaseModel):
     reason: Optional[str] = None
     xp_remaining_today: int
     message: Optional[str] = None
+    recovery_mode: bool = False
