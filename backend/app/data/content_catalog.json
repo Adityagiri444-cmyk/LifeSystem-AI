@@ -1,0 +1,389 @@
+[
+    {
+        "id": "move-walk-5",
+        "category": "movement",
+        "title": "5-minute walk around the block",
+        "description": "A short, easy walk. No pace, no goal.",
+        "duration_minutes": 5,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "overwhelmed",
+            "low_energy",
+            "okay"
+        ],
+        "format": "activity",
+        "tags": [
+            "outdoors",
+            "easy"
+        ]
+    },
+    {
+        "id": "move-walk-15",
+        "category": "movement",
+        "title": "15-minute easy walk outside",
+        "description": "Walk at whatever pace feels comfortable. Leave the phone in your pocket.",
+        "duration_minutes": 15,
+        "energy_required": 2,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "okay"
+        ],
+        "format": "activity",
+        "tags": [
+            "outdoors"
+        ]
+    },
+    {
+        "id": "move-stretch-5",
+        "category": "movement",
+        "title": "5-minute gentle stretch",
+        "description": "Stand by a window and stretch slowly: neck, shoulders, back.",
+        "duration_minutes": 5,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "overwhelmed",
+            "low_energy",
+            "okay"
+        ],
+        "format": "activity",
+        "tags": [
+            "indoors",
+            "easy"
+        ]
+    },
+    {
+        "id": "move-walk-30",
+        "category": "movement",
+        "title": "30-minute brisk walk",
+        "description": "A longer walk with a little pace. Good when you have energy to spare.",
+        "duration_minutes": 30,
+        "energy_required": 3,
+        "suited_states": [
+            "okay",
+            "stressed"
+        ],
+        "format": "activity",
+        "tags": [
+            "outdoors",
+            "active"
+        ]
+    },
+    {
+        "id": "breath-slow-2",
+        "category": "breathing",
+        "title": "2-minute slow breathing pause",
+        "description": "Sit comfortably and breathe in for 4 counts and out for 6, a few times.",
+        "duration_minutes": 2,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "overwhelmed",
+            "low_energy",
+            "okay"
+        ],
+        "format": "activity",
+        "tags": [
+            "indoors",
+            "quick"
+        ]
+    },
+    {
+        "id": "breath-box-5",
+        "category": "breathing",
+        "title": "5-minute box breathing",
+        "description": "Breathe in, hold, out, hold, each for 4 counts. Stop whenever you like.",
+        "duration_minutes": 5,
+        "energy_required": 1,
+        "suited_states": [
+            "stressed",
+            "overwhelmed",
+            "okay"
+        ],
+        "format": "activity",
+        "tags": [
+            "indoors"
+        ]
+    },
+    {
+        "id": "music-calm-10",
+        "category": "music",
+        "title": "Calm instrumental playlist",
+        "description": "Put on something instrumental and just listen for a while.",
+        "duration_minutes": 10,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "overwhelmed",
+            "low_energy",
+            "okay"
+        ],
+        "format": "audio",
+        "tags": [
+            "listening"
+        ],
+        "search_hint": "Search: calm instrumental playlist"
+    },
+    {
+        "id": "music-upbeat-15",
+        "category": "music",
+        "title": "Upbeat playlist while you tidy",
+        "description": "Pick songs you like and do one small tidy-up task.",
+        "duration_minutes": 15,
+        "energy_required": 2,
+        "suited_states": [
+            "okay",
+            "tired"
+        ],
+        "format": "audio",
+        "tags": [
+            "listening",
+            "light-chores"
+        ],
+        "search_hint": "Search: your favourite upbeat songs"
+    },
+    {
+        "id": "music-nature-20",
+        "category": "music",
+        "title": "Nature sounds, eyes closed",
+        "description": "Play rain or forest sounds and rest with your eyes closed.",
+        "duration_minutes": 20,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "overwhelmed",
+            "low_energy"
+        ],
+        "format": "audio",
+        "tags": [
+            "listening",
+            "rest"
+        ],
+        "search_hint": "Search: rain sounds"
+    },
+    {
+        "id": "video-short-10",
+        "category": "video",
+        "title": "A short feel-good video",
+        "description": "Watch one short clip that makes you smile, then stop.",
+        "duration_minutes": 10,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "overwhelmed",
+            "low_energy",
+            "okay"
+        ],
+        "format": "video",
+        "tags": [
+            "light"
+        ],
+        "search_hint": "Search: funny animal clips"
+    },
+    {
+        "id": "video-learn-15",
+        "category": "video",
+        "title": "A short video on something you're curious about",
+        "description": "Pick a topic you enjoy, no notes needed.",
+        "duration_minutes": 15,
+        "energy_required": 2,
+        "suited_states": [
+            "okay",
+            "stressed"
+        ],
+        "format": "video",
+        "tags": [
+            "curiosity"
+        ],
+        "search_hint": "Search: a 10-minute explainer on a topic you like"
+    },
+    {
+        "id": "video-nature-20",
+        "category": "video",
+        "title": "A slow nature documentary clip",
+        "description": "A quiet, slow-paced video. Nothing to do but watch.",
+        "duration_minutes": 20,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "overwhelmed",
+            "low_energy"
+        ],
+        "format": "video",
+        "tags": [
+            "quiet"
+        ],
+        "search_hint": "Search: nature documentary clip"
+    },
+    {
+        "id": "fun-puzzle-10",
+        "category": "entertainment",
+        "title": "A quick puzzle or word game",
+        "description": "One crossword, sudoku or word game. Stop after one.",
+        "duration_minutes": 10,
+        "energy_required": 2,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "okay"
+        ],
+        "format": "activity",
+        "tags": [
+            "light",
+            "game"
+        ]
+    },
+    {
+        "id": "fun-comfort-30",
+        "category": "entertainment",
+        "title": "One episode of a comfort show",
+        "description": "Pick something familiar. One episode is enough.",
+        "duration_minutes": 30,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "overwhelmed",
+            "low_energy",
+            "stressed"
+        ],
+        "format": "video",
+        "tags": [
+            "light",
+            "rest"
+        ]
+    },
+    {
+        "id": "fun-draw-15",
+        "category": "entertainment",
+        "title": "Doodle for fifteen minutes",
+        "description": "Draw anything, badly on purpose. No one will see it.",
+        "duration_minutes": 15,
+        "energy_required": 2,
+        "suited_states": [
+            "stressed",
+            "okay",
+            "tired"
+        ],
+        "format": "activity",
+        "tags": [
+            "creative"
+        ]
+    },
+    {
+        "id": "journal-3lines-3",
+        "category": "journaling",
+        "title": "Three lines about today",
+        "description": "Write one thing that happened, one thing you noticed, and one thing for tomorrow.",
+        "duration_minutes": 3,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "overwhelmed",
+            "low_energy",
+            "okay"
+        ],
+        "format": "text",
+        "tags": [
+            "quick",
+            "writing"
+        ]
+    },
+    {
+        "id": "journal-dump-10",
+        "category": "journaling",
+        "title": "10-minute brain dump",
+        "description": "Write everything on your mind as a list. No order, no editing.",
+        "duration_minutes": 10,
+        "energy_required": 2,
+        "suited_states": [
+            "stressed",
+            "overwhelmed",
+            "okay"
+        ],
+        "format": "text",
+        "tags": [
+            "writing"
+        ]
+    },
+    {
+        "id": "journal-grateful-5",
+        "category": "journaling",
+        "title": "Three good small things",
+        "description": "Write three small things from today that were okay or better than okay.",
+        "duration_minutes": 5,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "low_energy",
+            "okay"
+        ],
+        "format": "text",
+        "tags": [
+            "writing",
+            "quick"
+        ]
+    },
+    {
+        "id": "social-message-3",
+        "category": "social",
+        "title": "Send a short message to someone",
+        "description": "Text a friend or family member: a hello, a photo, or a silly thought.",
+        "duration_minutes": 3,
+        "energy_required": 1,
+        "suited_states": [
+            "tired",
+            "stressed",
+            "overwhelmed",
+            "low_energy",
+            "okay"
+        ],
+        "format": "activity",
+        "tags": [
+            "quick",
+            "people"
+        ]
+    },
+    {
+        "id": "social-call-15",
+        "category": "social",
+        "title": "Call someone you trust",
+        "description": "A short, relaxed chat. You can say you only have 15 minutes.",
+        "duration_minutes": 15,
+        "energy_required": 2,
+        "suited_states": [
+            "stressed",
+            "overwhelmed",
+            "okay"
+        ],
+        "format": "activity",
+        "tags": [
+            "people"
+        ]
+    },
+    {
+        "id": "social-together-30",
+        "category": "social",
+        "title": "Do something small alongside someone",
+        "description": "Share a meal, a walk or a show with someone. You don't have to talk much.",
+        "duration_minutes": 30,
+        "energy_required": 2,
+        "suited_states": [
+            "tired",
+            "okay",
+            "low_energy"
+        ],
+        "format": "activity",
+        "tags": [
+            "people",
+            "together"
+        ]
+    }
+]
