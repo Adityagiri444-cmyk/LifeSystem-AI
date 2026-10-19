@@ -6,6 +6,34 @@ and to have a real reference for what broke and why.
 
 ---
 
+## Weeks 21-22 (recovery mode, content recommendations)
+
+**In my own words (Weeks 21-22):** WRITE 3-4 SENTENCES HERE FROM MEMORY.
+
+**Design decisions:**
+- No free-text notes in check-ins (data minimization, per SAFETY.md).
+- Recovery state is derived from the latest check-in (strain state within 24h),
+  not a stored flag, so it can't get stuck on.
+- Recovery mode only guides suggestions (easy quests, 20 minutes or less, 50 XP
+  target). Quest completion is never blocked or penalised.
+- The content catalog is JSON data plus pure ranking functions; a test scans
+  the catalog text for clinical or treatment wording.
+
+**Known gaps (deferred):**
+- Recovery completions still count towards difficulty streaks, so a tired day on
+  an easy quest can push the user up a level.
+- Quests have no duration data, so recovery mode's "short quest" filter is weak
+  (unknown duration is allowed).
+- Content recommendations have no feedback loop yet (likes/dislikes in Week 28).
+- The catalog is small and hand-written, with no real links.
+- Profile `preferences` is an unvalidated JSON blob; unknown categories are
+  silently ignored.
+
+**Process (Week 20 commit):** `git add .` was run from `backend/`, which skipped
+files outside it (DEVLOG.md, frontend/). *Lesson: run git commands from the repo root.*
+
+---
+
 ## Weeks 17-20 (difficulty, bottlenecks, next action, explainability)
 
 **In my own words (Week 20):** WRITE 3-4 SENTENCES HERE FROM MEMORY.
@@ -90,8 +118,8 @@ violated. Score alone isn't enough.*
 ## Process/security notes
 
 - **A real DB password was committed in an earlier version of this file**
-  (commit 9c8c0ec). Redacted now and the password rotated; it remains in Git
-  history, so it is treated as compromised. `.env` itself is gitignored.
+  (commit 9c8c0ec). Redacted now. It remains in Git history, so it is treated as
+  compromised and must be rotated (TODO: confirm rotated). `.env` itself is gitignored.
   *Lesson: never write real credentials in docs, logs, or chat.*
 - **A commit (`beeb4ad`) was titled "Add DEVLOG.md" but the file itself was
   never actually created** — the evidence engine files got committed under
