@@ -6,6 +6,36 @@ and to have a real reference for what broke and why.
 
 ---
 
+## Week 23 (safety layer)
+
+**In my own words (Week 23):** WRITE 3-4 SENTENCES HERE FROM MEMORY.
+
+**What was built:** `safety.py` + `safety_policy.json`; `POST /safety/check`
+(escalate / redirect / none), `GET /safety/resources`, an output gate
+(`safe_output`) for generated text, and a `support_prompt` on `/recovery/status`
+after 3+ strain check-ins in 72h (hidden once the latest check-in is "okay").
+126 tests pass.
+
+**Bugs caught by my own tests (fixed):**
+- "self-harming" slipped past the crisis rule (the pattern ended in a word
+  boundary right after "harm"). Fix: allow `harm(ing|ed|s)`.
+- "This breathing exercise will cure your anxiety" slipped past the output
+  filter (it only matched a fixed list of subject words). Fix: match the claim
+  verb + target instead of the subject.
+*Lesson: write the failing cases first; the examples I thought of were not the
+ones that broke.*
+
+**Known gaps (deferred):**
+- Pattern matching is not understanding: it misses indirect wording and will
+  over-flag some jokes ("I want to die laughing"). It errs towards support.
+- English only.
+- Helpline numbers (Tele-MANAS, 988, Samaritans) must be re-verified before the
+  Week 31 deployment.
+- `/safety/check` is not yet applied to existing free-text fields (goal titles
+  and descriptions). Wire it in during Week 24/27.
+
+---
+
 ## Weeks 21-22 (recovery mode, content recommendations)
 
 **In my own words (Weeks 21-22):** WRITE 3-4 SENTENCES HERE FROM MEMORY.

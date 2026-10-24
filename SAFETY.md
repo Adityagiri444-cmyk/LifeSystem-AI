@@ -26,7 +26,35 @@ guidance features are designed around, starting from Week 9 of development.
 - Secrets (DB credentials, JWT signing key) live only in `.env`, which is
   gitignored and never committed.
 
+## Safety layer (Week 23)
+Implemented in `backend/app/services/safety.py`, with all wording and rules in
+`backend/app/data/safety_policy.json` so they can be reviewed without reading code.
+
+**Input checks** (`POST /safety/check`): user-written text is classified in memory as
+- `escalate` (crisis or self-harm language): supportive message, "contact your local
+  emergency number", and a list of free helplines. No attempt to resolve or analyse it.
+- `redirect` (asks for a diagnosis, or for medication/treatment advice): a plain
+  refusal that points to a qualified professional, then offers low-pressure activities.
+- `none`: nothing detected.
+The most serious category always wins. The checked text is never stored or logged.
+
+**Output gate** (`safe_output`): any generated text (Week 24 LLM, templates) must pass
+a banned-pattern filter before it is shown: no diagnosis ("you have depression"), no
+treatment or cure claims, no medication or dosage advice, no "you don't need a
+doctor". If it fails, a safe fallback is shown instead. The backend, not the model,
+is the authority.
+
+**Support prompt**: three or more strain check-ins within 72 hours (and the latest is
+not "okay") adds a gentle "talk to someone you trust" prompt to `/recovery/status`.
+
+**Known limits** (be honest about these):
+- Pattern matching is not understanding. It misses indirect or novel wording and will
+  occasionally over-flag (for example a joke like "I want to die laughing"). It errs
+  towards showing support.
+- Only English is covered.
+- Helpline numbers must be re-verified before any public deployment (Week 31).
+- This is a productivity tool, not a medical or crisis service.
+
 ## Status
-This is a living document. It will be expanded significantly in Week 23
-(Safety layer) with explicit boundaries, refusal patterns, and escalation
-language before any LLM-generated content (Week 24) is introduced.
+Living document. Next: Week 24 routes all LLM output through the output gate and
+adds structured-schema validation with fallbacks.

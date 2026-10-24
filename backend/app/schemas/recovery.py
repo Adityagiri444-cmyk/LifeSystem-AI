@@ -26,3 +26,4 @@ class RecoveryStatusResponse(BaseModel):
     xp_target_today: Optional[int] = None
     max_quest_minutes: Optional[int] = None
     safety_note: str
+    support_prompt: Optional[str] = None

@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 from sqlalchemy.orm import Session
 from app.models import CheckIn
+from app.services.safety import SUPPORT_PROMPT, needs_support_prompt
 
 # States a user can report. "okay" means "I'm fine now" and ends recovery mode.
 STRAIN_STATES = ("tired", "stressed", "overwhelmed", "low_energy")
@@ -76,6 +77,15 @@ def get_latest_check_in(db: Session, user_id: int) -> Optional[CheckIn]:
     )
 
 
+def count_recent_strain_checkins(db: Session, user_id: int, now: datetime, hours: int = 72) -> int:
+    since = now - timedelta(hours=hours)
+    return (
+        db.query(CheckIn)
+        .filter(CheckIn.user_id == user_id, CheckIn.state.in_(STRAIN_STATES), CheckIn.created_at >= since)
+        .count()
+    )
+
+
 def get_recovery_status(db: Session, user_id: int) -> dict:
     latest = get_latest_check_in(db, user_id)
     now = datetime.now(timezone.utc)
@@ -90,4 +100,7 @@ def get_recovery_status(db: Session, user_id: int) -> dict:
         "xp_target_today": RECOVERY_XP_CAP if active else None,
         "max_quest_minutes": RECOVERY_MAX_MINUTES if active else None,
         "safety_note": SAFETY_NOTE,
+        "support_prompt": SUPPORT_PROMPT
+        if state in STRAIN_STATES and needs_support_prompt(count_recent_strain_checkins(db, user_id, now))
+        else None,
     }
