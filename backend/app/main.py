@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.config import settings
-from app.routers import health, quests, auth, profile, goals, assessment, status, roadmap, insights, recovery, recommendations, safety
+from app.routers import health, quests, auth, profile, goals, assessment, status, roadmap, insights, recovery, recommendations, safety, guidance
 from app.database import Base, engine
 from app import models
 
@@ -22,6 +22,7 @@ app.include_router(insights.router)
 app.include_router(recovery.router)
 app.include_router(recommendations.router)
 app.include_router(safety.router)
+app.include_router(guidance.router)
 
 Base.metadata.create_all(bind=engine)
 

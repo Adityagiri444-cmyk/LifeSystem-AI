@@ -55,6 +55,33 @@ not "okay") adds a gentle "talk to someone you trust" prompt to `/recovery/statu
 - Helpline numbers must be re-verified before any public deployment (Week 31).
 - This is a productivity tool, not a medical or crisis service.
 
+## LLM integration (Week 24)
+Implemented in `backend/app/services/guidance.py` and `llm.py`. The LLM is optional and
+only ever drafts one short wording line. The backend stays the authority.
+
+- **Minimal data out:** the prompt contains only four facts: mode (recovery/growth),
+  a feeling label from a fixed list, the title of the quest the backend chose, and the
+  title of one catalog activity. No names, emails, user-written text, or history.
+- **The LLM never chooses actions:** quests and activities come from the rule-based
+  engines. The model cannot add, change or invent recommendations.
+- **Strict output schema:** JSON `{message, tone}` only. Message must be plain text,
+  280 characters or fewer, one line, no links; tone must be from a fixed list.
+- **Safety gate on every reply:** the Week 23 output filter runs on the model's text.
+  A diagnosis, treatment claim, or "you don't need a doctor" is blocked.
+- **Always a fallback:** missing key, timeout, HTTP error, bad JSON, schema failure or
+  safety block all return a deterministic template instead. The response says which
+  (`source` and `fallback_reason`). Errors never reach the user.
+- **Support prompt and safety note** are added by the backend, verbatim, never by the model.
+- **Secrets:** the API key lives only in `.env`, is sent only as a request header, and is
+  never logged or returned.
+- **Caching:** identical facts reuse a reply for 10 minutes to stay inside free-tier limits.
+
+**Known limits:**
+- Free-tier providers can change limits, models or terms, and may use prompts to improve
+  their products. Only the minimal facts above are sent for that reason.
+- The output filter is pattern-based; a cleverly worded harmful reply could pass. The
+  tight schema, short length and minimal facts reduce that risk but don't remove it.
+
 ## Status
-Living document. Next: Week 24 routes all LLM output through the output gate and
-adds structured-schema validation with fallbacks.
+Living document. Next: Phase 6 (React UI) must show the safety note and support prompt
+on every guidance screen, and call `/safety/check` on any free-text field.
