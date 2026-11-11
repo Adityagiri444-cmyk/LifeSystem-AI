@@ -6,6 +6,45 @@ and to have a real reference for what broke and why.
 
 ---
 
+## Week 24 (LLM integration - milestone gate for Weeks 21-24)
+
+**In my own words (Week 24):** WRITE 3-4 SENTENCES HERE FROM MEMORY.
+
+**What was built:** a provider-agnostic LLM client (`llm.py`, any OpenAI-compatible
+API, configured only through `.env`) and `GET /guidance/today` (`guidance.py`). The
+backend picks the quest and activity; the LLM only drafts one short line, as strict
+JSON `{message, tone}`. Every reply passes a schema check and the Week 23 output
+filter; anything else falls back to a template and the response says why
+(`source`, `fallback_reason`). Identical facts are cached for 10 minutes. 149 tests
+pass. Verified live with Gemini (`source: llm`).
+
+**Data sent to the provider:** only four facts (mode, a feeling label from a fixed
+list, one quest title, one activity title). No names, emails, notes or history.
+Google's free tier states prompts may be used to improve their products, so
+nothing personal may ever be added to this prompt.
+
+**Problems hit and fixed:**
+- `http_404` from Gemini: the docs page listed `gemini-2.5-flash-lite` but the API
+  said it was no longer available to new users and named `gemini-3.5-flash-lite`.
+  Found by running a small diagnostic that printed Google's real error body.
+  *Lesson: docs lag the API; test the endpoint, and make errors observable
+  (`fallback_reason`) so a failure is diagnosable.*
+- An API key was shown in a screenshot. It was deleted and replaced.
+  *Lesson: never screenshot, paste or commit keys; blur them first.*
+- `.env.example` was committed without the new LLM lines; fixed in a follow-up commit.
+- The model repeated the internal word "recovery" in its message ("feel stressed in
+  recovery"), which can read as addiction recovery.
+
+**Known gaps (deferred):**
+- Change the mode label sent to the model from "recovery" to a neutral phrase
+  (for example "gentle day") and add a test.
+- The output filter is pattern-based and can miss cleverly worded harmful text.
+- Free-tier limits and model names change; a `429` or `404` falls back to templates.
+- The cache is in memory: it resets on restart and is not shared between workers.
+- `/safety/check` is still not applied to goal titles and descriptions.
+
+---
+
 ## Week 23 (safety layer)
 
 **In my own words (Week 23):** WRITE 3-4 SENTENCES HERE FROM MEMORY.
